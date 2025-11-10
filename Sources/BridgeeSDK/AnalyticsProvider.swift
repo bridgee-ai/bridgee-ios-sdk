@@ -2,6 +2,7 @@ import Foundation
 
 /// Um protocolo implementado pelo aplicativo cliente para fornecer
 /// uma ponte para sua instância do Firebase Analytics.
+@objc
 public protocol AnalyticsProvider {
     /// Define uma propriedade de usuário no Firebase Analytics.
     /// - Parameters:
