@@ -35,6 +35,22 @@ public final class BridgeeSDK: NSObject {
     
     // Prefixo para logs internos
     private let logPrefix = "[BridgeeSDK]"
+    
+    // Helper para tratar erros e gerar mensagens amigáveis
+    private func handleError(_ error: Error) -> String {
+        let errorMessage: String
+        
+        if let apiError = error as? APIError {
+            errorMessage = apiError.localizedDescription
+        } else {
+            errorMessage = "Unexpected error: \(error.localizedDescription)"
+        }
+        
+        // Log interno para debug
+        print("\(logPrefix) Error: \(errorMessage)")
+        
+        return errorMessage
+    }
 
     // 3. Método de Configuração (Constructor)
     /// Configura a instância singleton do SDK.
@@ -72,19 +88,19 @@ public final class BridgeeSDK: NSObject {
     public func firstOpen(with matchBundle: MatchBundle, completion: @escaping ((UTMData?, String?) -> Void)) {
         // Verificações de configuração
         guard let tenantId = self.tenantId else {
-            completion(nil, "Erro sem tenantId")
+            completion(nil, APIError.unconfigured.localizedDescription)
             return
         }
         
         guard let tenantToken = self.tenantToken else {
-            completion(nil, "Erro sem tenantToken")
+            completion(nil, APIError.missingTenantToken.localizedDescription)
             return
         }
         
         // Fazer chamada à API usando completion handler
         performMatchRequest(bundle: matchBundle, token: tenantToken) { [weak self] result in
             guard let self = self else {
-                completion(nil, "Erro sem self")
+                completion(nil, "Internal SDK error. Please try again.")
                 return
             }
             
@@ -133,7 +149,17 @@ public final class BridgeeSDK: NSObject {
                 
                 completion(utmData, nil)
             case .failure(let error):
-                completion(nil, error.localizedDescription)
+                // Caso especial para 404 - retorna UTM vazio sem erro
+                if let apiError = error as? APIError, case .notFound = apiError {
+                    let emptyUtmData = UTMData(
+                        utm_source: "",
+                        utm_medium: "",
+                        utm_campaign: ""
+                    )
+                    completion(emptyUtmData, nil)
+                } else {
+                    completion(nil, self.handleError(error))
+                }
             }
         }
     }
@@ -169,7 +195,12 @@ public final class BridgeeSDK: NSObject {
             }
             
             guard (200...299).contains(httpResponse.statusCode) else {
-                completion(.failure(APIError.serverError(statusCode: httpResponse.statusCode)))
+                // Tratar 404 como caso especial - não é erro, retorna UTM vazio
+                if httpResponse.statusCode == 404 {
+                    completion(.failure(APIError.notFound))
+                } else {
+                    completion(.failure(APIError.serverError(statusCode: httpResponse.statusCode)))
+                }
                 return
             }
             

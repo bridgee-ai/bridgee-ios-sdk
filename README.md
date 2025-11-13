@@ -1,6 +1,7 @@
 # Bridgee iOS SDK
 
 [![Swift Package Manager](https://img.shields.io/badge/SPM-compatible-brightgreen.svg)](https://swift.org/package-manager/)
+[![CocoaPods](https://img.shields.io/badge/CocoaPods-compatible-red.svg)](https://cocoapods.org/)
 [![iOS](https://img.shields.io/badge/iOS-14.0%2B-blue.svg)](https://developer.apple.com/ios/)
 [![Swift](https://img.shields.io/badge/Swift-5.5%2B-orange.svg)](https://swift.org/)
 
@@ -11,7 +12,7 @@ O **Bridgee iOS SDK** é uma solução completa de atribuição que conecta suas
 ### 🎯 Principais Funcionalidades
 
 - **Atribuição Precisa**: Conecta cliques em campanhas com instalações reais
-- **Swift Package Manager**: Distribuição moderna e fácil integração
+- **Múltiplas Opções de Instalação**: Swift Package Manager e CocoaPods
 - **Integração Flexível**: Funciona com qualquer provedor de analytics
 - **Callbacks Assíncronos**: Receba dados de atribuição em tempo real
 - **Eventos Automáticos**: Dispara eventos padronizados automaticamente
@@ -36,6 +37,20 @@ Ou adicione ao seu `Package.swift`:
 dependencies: [
     .package(url: "https://github.com/bridgee-ai/bridgee-ios-sdk.git", from: "1.0.0")
 ]
+```
+
+### CocoaPods
+
+Adicione ao seu `Podfile`:
+
+```ruby
+pod 'BridgeeSDK', '~> 1.0'
+```
+
+Em seguida, execute:
+
+```bash
+pod install
 ```
 
 ---
