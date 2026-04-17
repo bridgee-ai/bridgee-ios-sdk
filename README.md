@@ -155,6 +155,8 @@ class ContentView: View {
 }
 ```
 
+> 💡 **Projeto de Exemplo Completo**: Confira o [bridgee-ios-example](https://github.com/bridgee-ai/bridgee-ios-example) para ver uma implementação completa com interface de usuário e tratamento de callbacks.
+
 ---
 
 ## 📚 Guia Detalhado
@@ -176,26 +178,9 @@ BridgeeSDK.shared.firstOpen(with: matchBundle) { utmData in
 }
 ```
 
-### Eventos Automáticos
+### Eventos e Propriedades de Usuário
 
-O SDK automaticamente dispara os seguintes eventos:
-
-| Evento | Descrição |
-|--------|-----------| 
-| `first_open` | Primeira abertura do app |
-| `campaign_details` | Detalhes da campanha de atribuição |
-| `{tenant_id}_first_open` | Evento personalizado por tenant |
-| `{tenant_id}_campaign_details` | Evento de campanha personalizado |
-
-### User Properties Automáticas
-
-O SDK define automaticamente as seguintes propriedades de usuário:
-
-| Propriedade | Descrição |
-|-------------|-----------| 
-| `install_source` | Fonte da instalação (UTM Source) |
-| `install_medium` | Meio da instalação (UTM Medium) |
-| `install_campaign` | Campanha da instalação (UTM Campaign) |
+Quando a atribuição é resolvida, o SDK dispara automaticamente eventos padronizados de atribuição e define propriedades de usuário através do seu `AnalyticsProvider`. Isso garante que os dados de UTM fiquem associados a toda a sessão do usuário na sua ferramenta de analytics (Firebase, Amplitude, etc.), sem que você precise tratar isso manualmente.
 
 ---
 
@@ -380,9 +365,12 @@ Console.app → Filtrar por "BRIDGEE-SDK"
 
 ## 🔗 Links Úteis
 
+- 📱 [Exemplo de Implementação](https://github.com/bridgee-ai/bridgee-ios-example) - Implementação completa com UI
+- 📦 [CocoaPods](https://cocoapods.org/pods/BridgeeAiSDK)
+- 🤖 [Bridgee Android SDK](https://github.com/bridgee-ai/bridgee-android-sdk)
+- ⚛️ [Bridgee React Native SDK](https://github.com/bridgee-ai/bridgee-react-native-sdk)
 - 🐛 [Reportar Issues](https://github.com/bridgee-ai/bridgee-ios-sdk/issues)
 - 💬 [Suporte Técnico](mailto:support@bridgee.ai)
-- 📱 [Exemplo de Implementação](https://github.com/bridgee-ai/bridgee-ios-example)
 
 
 ---
