@@ -113,40 +113,8 @@ public final class BridgeeSDK: NSObject {
                     utm_campaign: response.utm_campaign
                 )
                 
-                // Verificação de dryRun - agora após obter dados da API
-                if self.dryRun {
-                    completion(utmData, nil)
-                    return
-                }
-                
-                // Verificar se provider está disponível (apenas necessário quando não é dry run)
-                guard let provider = self.provider else {
-                    completion(utmData, nil) // Retorna os dados mesmo sem provider
-                    return
-                }
-                
-                // Parâmetros comuns para eventos
-                let eventParams: [String: Any] = [
-                    "utm_source": response.utm_source,
-                    "utm_medium": response.utm_medium,
-                    "utm_campaign": response.utm_campaign,
-                    "source": response.utm_source, // duplicado conforme solicitado
-                    "medium": response.utm_medium, // duplicado conforme solicitado
-                    "campaign": response.utm_campaign // duplicado conforme solicitado
-                ]
+                self.deliverAttribution(response, tenantId: tenantId)
 
-                // Enviar eventos para o FirebaseAnalytics
-                let sanitizedTenantId = tenantId.replacingOccurrences(of: "-", with: "_")
-                provider.logEvent(name: "\(sanitizedTenantId)_first_open", parameters: eventParams)
-                provider.logEvent(name: "\(sanitizedTenantId)_campaign_details", parameters: eventParams)
-                provider.logEvent(name: "first_open", parameters: eventParams)
-                provider.logEvent(name: "campaign_details", parameters: eventParams)
-
-                // Gravar propriedades do usuário
-                provider.setUserProperty(name: "install_source", value: response.utm_source)
-                provider.setUserProperty(name: "install_medium", value: response.utm_medium)
-                provider.setUserProperty(name: "install_campaign", value: response.utm_campaign)
-                
                 completion(utmData, nil)
             case .failure(let error):
                 // Caso especial para 404 - retorna UTM vazio sem erro
@@ -164,6 +132,26 @@ public final class BridgeeSDK: NSObject {
         }
     }
     
+    // Testável sem rede; o contrato público e o callback permanecem iguais.
+    internal func deliverAttribution(_ response: APIResponse, tenantId: String) {
+        guard !dryRun, let provider = provider else { return }
+        let eventParams: [String: Any] = [
+            "utm_source": response.utm_source,
+            "utm_medium": response.utm_medium,
+            "utm_campaign": response.utm_campaign,
+            "source": response.utm_source,
+            "medium": response.utm_medium,
+            "campaign": response.utm_campaign
+        ]
+        // Firebase é responsável por first_open; Bridgee entrega apenas a campanha.
+        let prefix = tenantId.replacingOccurrences(of: "-", with: "_")
+        provider.logEvent(name: "\(prefix)_campaign_details", parameters: eventParams)
+        provider.logEvent(name: "campaign_details", parameters: eventParams)
+        provider.setUserProperty(name: "install_source", value: response.utm_source)
+        provider.setUserProperty(name: "install_medium", value: response.utm_medium)
+        provider.setUserProperty(name: "install_campaign", value: response.utm_campaign)
+    }
+
     // 5a. Lógica de Rede Interna (compatível com iOS 14.0+)
     private func performMatchRequest(bundle: MatchBundle, token: String, completion: @escaping (Result<APIResponse, Error>) -> Void) {
         guard let url = URL(string: apiBaseURL) else {
