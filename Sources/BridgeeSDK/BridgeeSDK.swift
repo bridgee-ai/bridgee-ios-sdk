@@ -132,6 +132,22 @@ public final class BridgeeSDK: NSObject {
         }
     }
     
+    /// Explicit policy entry; denied consent and native Google never contact the match API.
+    @objc
+    public func firstOpen(with bundle: MatchBundle, consentGranted: Bool,
+                          preserveNativeGoogleAttribution: Bool,
+                          completion: @escaping ((UTMData?, String?) -> Void)) {
+        guard consentGranted else {
+            completion(nil, "attribution_consent_required")
+            return
+        }
+        if preserveNativeGoogleAttribution {
+            completion(UTMData(utm_source: "", utm_medium: "", utm_campaign: ""), nil)
+            return
+        }
+        firstOpen(with: bundle, completion: completion)
+    }
+
     // Testável sem rede; o contrato público e o callback permanecem iguais.
     internal func deliverAttribution(_ response: APIResponse, tenantId: String) {
         guard !dryRun, let provider = provider else { return }

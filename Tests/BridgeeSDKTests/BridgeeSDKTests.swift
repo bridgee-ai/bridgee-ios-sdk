@@ -105,6 +105,18 @@ final class BridgeeSDKTests: XCTestCase {
         XCTAssertEqual(mockProvider.lastUserPropertyValue, "Launch+Summer")
     }
 
+    func testDeniedConsentAndNativeGoogleNeverDeliver() {
+        sdk.firstOpen(with: MatchBundle(), consentGranted: false, preserveNativeGoogleAttribution: false) { data, error in
+            XCTAssertNil(data)
+            XCTAssertEqual(error, "attribution_consent_required")
+        }
+        sdk.firstOpen(with: MatchBundle(), consentGranted: true, preserveNativeGoogleAttribution: true) { data, error in
+            XCTAssertEqual(data?.utm_source, "")
+            XCTAssertNil(error)
+        }
+        XCTAssertEqual(mockProvider.eventLogCount, 0)
+        XCTAssertEqual(mockProvider.userPropertySetCount, 0)
+    }
 }
 
 // Extensão para acessar a struct interna para teste
