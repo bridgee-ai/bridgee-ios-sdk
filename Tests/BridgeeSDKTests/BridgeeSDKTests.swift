@@ -9,6 +9,7 @@ class MockAnalyticsProvider: AnalyticsProvider {
     var lastUserPropertyName: String?
     var lastUserPropertyValue: String?
     
+    var events: [String] = []
     var eventLogCount = 0
     var userPropertySetCount = 0
 
@@ -19,6 +20,7 @@ class MockAnalyticsProvider: AnalyticsProvider {
     }
     
     func logEvent(name: String, parameters: [String: Any]?) {
+        events.append(name)
         lastEventName = name
         lastEventParams = parameters
         eventLogCount += 1
@@ -54,7 +56,7 @@ final class BridgeeSDKTests: XCTestCase {
     }
     
     func testMatchBundleCreation() {
-        var bundle = MatchBundle()
+        let bundle = MatchBundle()
         bundle.set(name: "John Doe")
         bundle.set(email: "john@doe.com")
         bundle.setCustom(key: "custom_id", value: "12345")
@@ -76,7 +78,7 @@ final class BridgeeSDKTests: XCTestCase {
         }
     }
     
-    func testDryRunMode() async {
+    func testDryRunMode() {
         // Reconfigura para dryRun
         sdk.configure(
             provider: mockProvider,
@@ -85,17 +87,36 @@ final class BridgeeSDKTests: XCTestCase {
             dryRun: true
         )
         
-        let bundle = MatchBundle()
-        await sdk.firstOpen(with: bundle)
+        sdk.deliverAttribution(APIResponse(utm_source: "TikTok", utm_medium: "paid_social", utm_campaign: "Launch"), tenantId: "test_tenant")
         
         // No modo dryRun, NENHUM evento deve ser enviado
         XCTAssertEqual(mockProvider.eventLogCount, 0)
         XCTAssertEqual(mockProvider.userPropertySetCount, 0)
     }
     
-    // Nota: O teste do método `firstOpen` com uma chamada de rede real
-    // exigiria mock da URLSession, o que é mais complexo.
-    // Este esboço foca na lógica de configuração e dryRun.
+    func testDeliveryPreservesCampaignWithoutFirstOpenOrPurchase() {
+        sdk.deliverAttribution(
+            APIResponse(utm_source: "TikTok", utm_medium: "paid_social", utm_campaign: "Launch+Summer"),
+            tenantId: "test-tenant"
+        )
+        XCTAssertEqual(mockProvider.events, ["test_tenant_campaign_details", "campaign_details"])
+        XCTAssertEqual(mockProvider.lastEventParams?["campaign"] as? String, "Launch+Summer")
+        XCTAssertEqual(mockProvider.userPropertySetCount, 3)
+        XCTAssertEqual(mockProvider.lastUserPropertyValue, "Launch+Summer")
+    }
+
+    func testDeniedConsentAndNativeGoogleNeverDeliver() {
+        sdk.firstOpen(with: MatchBundle(), consentGranted: false, preserveNativeGoogleAttribution: false) { data, error in
+            XCTAssertNil(data)
+            XCTAssertEqual(error, "attribution_consent_required")
+        }
+        sdk.firstOpen(with: MatchBundle(), consentGranted: true, preserveNativeGoogleAttribution: true) { data, error in
+            XCTAssertEqual(data?.utm_source, "")
+            XCTAssertNil(error)
+        }
+        XCTAssertEqual(mockProvider.eventLogCount, 0)
+        XCTAssertEqual(mockProvider.userPropertySetCount, 0)
+    }
 }
 
 // Extensão para acessar a struct interna para teste
