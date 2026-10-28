@@ -383,3 +383,11 @@ Console.app → Filtrar por "BRIDGEE-SDK"
 ---
 
 **Desenvolvido com ❤️ pela equipe Bridgee.ai**
+
+## Measurement Lab: migração incremental
+
+Veja [delta implementado, dependências e critérios de aceite](docs/measurement-lab-migration.md).
+
+## Entrada com política explícita
+
+Use `firstOpen(with: bundle, consentGranted: true, preserveNativeGoogleAttribution: false, completion: ...)` após decisão do app/CMP. Consentimento negado retorna `attribution_consent_required` sem rede; Google nativo preservado retorna UTMs vazias sem rede/campanha. O método legado continua disponível. A política não é inferida a partir de UTMs; first_open/purchase seguem com Firebase. Esta mudança ainda depende de aprovação/release; versões publicadas não foram alteradas.
