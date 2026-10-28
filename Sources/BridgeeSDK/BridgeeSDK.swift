@@ -182,7 +182,10 @@ public final class BridgeeSDK: NSObject {
         request.httpBody = bundle.asAPIBody()
 
         // Usa URLSession nativo com completion handler (compatível com iOS 14.0+)
-        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+        let session = URLSession(configuration: MatchTransport.configuration(),
+                                 delegate: MatchRedirectPolicy(), delegateQueue: nil)
+        session.dataTask(with: request) { [weak self] data, response, error in
+            defer { session.finishTasksAndInvalidate() }
             guard let self = self else {
                 completion(.failure(APIError.networkError(URLError(.unknown))))
                 return

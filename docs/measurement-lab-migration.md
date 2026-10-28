@@ -38,3 +38,7 @@ Documentar retirada de `<tenant>_first_open` para consumidores. Atualizar podspe
 RN e exemplo depois da release aprovada. Testar Swift e Obj-C, callback, dryRun,
 404, offline/retry, consentimento, native Google e DebugView. Testes de entrega não
 homologam Universal Links, aquisição via App Store ou Firebase em dispositivo.
+
+## Verificação interna de transporte em 28/10/2026
+
+Matching usa sessão efêmera sem cookies, armazenamento de credenciais ou cache de respostas. A sessão rejeita redirects HTTP antes de encaminhar o cabeçalho do tenant e é invalidada após a conclusão. Sete testes Swift aprovados, incluindo callback de redirect e configuração de privacidade. Nenhuma release SPM/Pod foi publicada nesta etapa.
