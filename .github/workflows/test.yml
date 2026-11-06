@@ -8,3 +8,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: swift test
+      - name: Compile iOS Simulator SDK
+        run: >-
+          xcodebuild -scheme BridgeeSDK -sdk iphonesimulator -configuration Debug
+          -destination 'generic/platform=iOS Simulator' -derivedDataPath build/ios
+          CODE_SIGNING_ALLOWED=NO build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: blink-deferred-ios-build-evidence
+          path: build/ios/Logs/Build
+          if-no-files-found: error
+          retention-days: 7
