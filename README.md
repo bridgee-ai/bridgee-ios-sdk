@@ -391,3 +391,19 @@ Veja [delta implementado, dependências e critérios de aceite](docs/measurement
 ## Entrada com política explícita
 
 Use `firstOpen(with: bundle, consentGranted: true, preserveNativeGoogleAttribution: false, completion: ...)` após decisão do app/CMP. Consentimento negado retorna `attribution_consent_required` sem rede; Google nativo preservado retorna UTMs vazias sem rede/campanha. O método legado continua disponível. A política não é inferida a partir de UTMs; first_open/purchase seguem com Firebase. Esta mudança ainda depende de aprovação/release; versões publicadas não foram alteradas.
+
+
+## Explicit continuation resolver candidate (unpublished)
+
+`DeferredLinkResolver.resolve(blinklink:blinklinkPrefixes:appLinkOrigins:completion:)`
+resolves an explicit app-owned Blinklink to its configured iOS Universal Link through
+`https://api.bridgee.ai/deferred?platform=ios`. Supply a trusted organization prefix
+ending in `/` and exact HTTPS app origins. Invalid/unavailable destinations return `nil`.
+The app handles dispatch to the main queue, supported paths, login and durable
+consumption after successful routing. The request uses an ephemeral session, rejects
+redirects and performs no matching or analytics.
+
+This does not implement automatic recovery across an App Store install. A Universal
+Link association alone cannot carry that context; an explicit continuation transport
+is still required. No clipboard or probabilistic mechanism is included. Backend test
+deploy and device acceptance remain pending; no SDK version or app release is published.
