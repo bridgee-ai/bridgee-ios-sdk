@@ -21,6 +21,11 @@ final class DeferredLinkResolverTests: XCTestCase {
         XCTAssertNil(DeferredLinkResolver.decode(Data(repeating: 65, count: 8193), source: link, origins: origins))
         XCTAssertFalse(DeferredLinkResolver.allowedDestination("https://app.example.com.evil.test/", origins: origins))
     }
+    func testContentTypeHeaderLookupIsCaseInsensitive() {
+        let response = HTTPURLResponse(url: URL(string: link)!, statusCode: 200, httpVersion: nil,
+                                       headerFields: ["cOnTeNt-TyPe": "application/vnd.bridgee.deferred+json"])!
+        XCTAssertEqual(DeferredLinkResolver.contentType(response), "application/vnd.bridgee.deferred+json")
+    }
     func testForeignEvidenceDoesNotRequestNetwork() {
         var completed = false
         DeferredLinkResolver.resolve(blinklink: "https://foreign.example/offer", blinklinkPrefixes: prefixes, appLinkOrigins: origins) {

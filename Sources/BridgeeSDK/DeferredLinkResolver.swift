@@ -40,6 +40,11 @@ public enum DeferredLinkResolver {
         return DeferredDestination(blinklink: source, appLink: payload.appLink)
     }
     private struct Payload: Decodable { let link: String; let appLink: String }
+    // Keep SwiftPM host compilation compatible with its default macOS deployment target.
+    // HTTPURLResponse.value(forHTTPHeaderField:) requires macOS 10.15.
+    static func contentType(_ response: HTTPURLResponse) -> String? {
+        response.allHeaderFields.first { String(describing: $0.key).lowercased() == "content-type" }?.value as? String
+    }
 
     /// Completion runs on the URLSession callback queue. The app owns successful-navigation persistence.
     public static func resolve(blinklink: String, blinklinkPrefixes: [String], appLinkOrigins: [String],
@@ -60,7 +65,7 @@ public enum DeferredLinkResolver {
             defer { session.finishTasksAndInvalidate() }
             guard error == nil, let response = response as? HTTPURLResponse, response.statusCode == 200,
                   response.url == endpointURL,
-                  response.value(forHTTPHeaderField: "Content-Type")?.components(separatedBy: ";")[0]
+                  contentType(response)?.components(separatedBy: ";")[0]
                     .trimmingCharacters(in: .whitespaces).lowercased() == "application/vnd.bridgee.deferred+json",
                   let data = data else { completion(nil); return }
             completion(decode(data, source: blinklink, origins: appLinkOrigins))
