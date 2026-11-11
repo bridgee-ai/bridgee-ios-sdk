@@ -1,3 +1,5 @@
+> This source line prepares iOS 2.0.0. Install a version only when its tag is present in the repository Releases. Analytics delivery changes require migration; read [FIRST_OPEN_MIGRATION](docs/FIRST_OPEN_MIGRATION.md) and [release gates](RELEASE_CANDIDATE.md).
+
 # Bridgee iOS SDK
 
 [![Swift Package Manager](https://img.shields.io/badge/SPM-compatible-brightgreen.svg)](https://swift.org/package-manager/)
@@ -7,16 +9,16 @@
 
 ## 📖 Visão Geral
 
-O **Bridgee iOS SDK** é uma solução completa de atribuição que conecta suas campanhas de marketing aos eventos de instalação e primeira abertura do seu aplicativo iOS. Ele resolve o problema de atribuição precisa em campanhas de aquisição de usuários, integrando-se perfeitamente com provedores de analytics como Firebase Analytics.
+O **Bridgee iOS SDK** resolve contexto de campanhas para o aplicativo e oferece integração com provedores de analytics. Um resultado de campanha não comprova instalação. O Firebase é responsável por `first_open`; a mudança de entrega analytics está descrita no guia de migração. A retomada de destino após instalar no iOS exige continuação explícita, como reabrir o link original.
 
 ### 🎯 Principais Funcionalidades
 
-- **Atribuição Precisa**: Conecta cliques em campanhas com instalações reais
+- **Contexto de campanha**: Disponibiliza dados para integração com o app; não é prova de instalação ou identidade.
 - **Múltiplas Opções de Instalação**: Swift Package Manager e CocoaPods
 - **Integração Flexível**: Funciona com qualquer provedor de analytics
 - **Callbacks Assíncronos**: Receba dados de atribuição em tempo real
 - **Atribuição de Sessão Automática**: O SDK cuida da comunicação com seu provedor de analytics para associar a sessão do usuário ao canal de aquisição
-- **Privacy Manifest**: Conformidade total com as diretrizes da Apple
+- **Privacy Manifest**: Inclui declaração de privacidade do SDK; o app deve revisar sua própria coleta e declarações. O arquivo não certifica conformidade com a Apple.
 
 ---
 
@@ -28,23 +30,25 @@ Adicione a dependência no Xcode:
 
 1. **File → Add Package Dependencies**
 2. Digite a URL do repositório: `https://github.com/bridgee-ai/bridgee-ios-sdk.git`
-3. Selecione a versão desejada
+3. Selecione uma tag disponível nas [Releases do repositório](https://github.com/bridgee-ai/bridgee-ios-sdk/releases). O estado e as notas da release são a referência para disponibilidade SPM; não deduza publicação somente da versão desta fonte.
 
-Ou adicione ao seu `Package.swift`:
+Para migrar explicitamente para esta linha, use `2.0.0` no seu `Package.swift` somente se a tag correspondente estiver disponível nas Releases:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/bridgee-ai/bridgee-ios-sdk.git", from: "1.0.0")
+    .package(url: "https://github.com/bridgee-ai/bridgee-ios-sdk.git", from: "2.0.0")
 ]
 ```
 
 ### CocoaPods
 
-Adicione ao seu `Podfile`:
+O nome correto do pod é `BridgeeAiSDK`. Na consulta de preparação de 11/11/2026, a versão disponível no CocoaPods era `1.1.1`:
 
 ```ruby
-pod 'BridgeeSDK', '~> 1.0'
+pod 'BridgeeAiSDK', '1.1.1'
 ```
+
+Essa consulta não encontrou `2.0.0` no CocoaPods. Verifique o registry antes de migrar; somente depois da publicação e validação, troque a versão por `'2.0.0'` e revisar o guia de migração. Publicar a tag SPM não publica o pod automaticamente. O nome do produto/module SwiftPM continua `BridgeeSDK`.
 
 Em seguida, execute:
 
