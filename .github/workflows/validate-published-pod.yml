@@ -1,0 +1,42 @@
+name: Validate published CocoaPods source tag
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Existing SDK source tag to validate without publishing
+        required: true
+        default: '2.0.0'
+  pull_request:
+    paths:
+      - '.github/workflows/validate-published-pod.yml'
+permissions:
+  contents: read
+jobs:
+  source-tag:
+    runs-on: macos-latest
+    timeout-minutes: 20
+    env:
+      RELEASE_TAG: ${{ inputs.release_tag || '2.0.0' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_tag || '2.0.0' }}
+          persist-credentials: false
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+      - run: gem install cocoapods --version 1.16.2 --no-document
+      - name: Verify tag metadata and source distribution
+        run: |
+          set -o pipefail
+          git rev-parse HEAD
+          xcodebuild -version
+          ruby -rcocoapods -e 's = Pod::Specification.from_file("BridgeeAiSDK.podspec"); abort "Version/tag mismatch" unless s.version.to_s == ENV.fetch("RELEASE_TAG") && s.source[:tag] == ENV.fetch("RELEASE_TAG")'
+          pod spec lint BridgeeAiSDK.podspec --platforms=ios --allow-warnings --verbose 2>&1 | tee published-source-lint.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bridgee-published-source-lint
+          path: published-source-lint.log
+          if-no-files-found: warn
+          retention-days: 7
