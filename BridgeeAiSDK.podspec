@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'BridgeeAiSDK'
-  s.version          = '1.2.0'
+  s.version          = '2.0.0'
   s.summary          = 'SDK de atribuição completo para conectar campanhas de marketing com instalações iOS'
   
   s.description      = <<-DESC

@@ -1,3 +1,5 @@
+> Release preparation: iOS 2.0.0 is not published yet. Analytics delivery changes require migration; read [FIRST_OPEN_MIGRATION](docs/FIRST_OPEN_MIGRATION.md) and [release gates](RELEASE_CANDIDATE.md).
+
 # Bridgee iOS SDK
 
 [![Swift Package Manager](https://img.shields.io/badge/SPM-compatible-brightgreen.svg)](https://swift.org/package-manager/)
@@ -34,7 +36,7 @@ Ou adicione ao seu `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/bridgee-ai/bridgee-ios-sdk.git", from: "1.0.0")
+    .package(url: "https://github.com/bridgee-ai/bridgee-ios-sdk.git", from: "2.0.0")
 ]
 ```
 
