@@ -1,4 +1,4 @@
-> Release preparation: iOS 2.0.0 is not published yet. Analytics delivery changes require migration; read [FIRST_OPEN_MIGRATION](docs/FIRST_OPEN_MIGRATION.md) and [release gates](RELEASE_CANDIDATE.md).
+> This source line prepares iOS 2.0.0. Install a version only when its tag is present in the repository Releases. Analytics delivery changes require migration; read [FIRST_OPEN_MIGRATION](docs/FIRST_OPEN_MIGRATION.md) and [release gates](RELEASE_CANDIDATE.md).
 
 # Bridgee iOS SDK
 
@@ -30,9 +30,9 @@ Adicione a dependência no Xcode:
 
 1. **File → Add Package Dependencies**
 2. Digite a URL do repositório: `https://github.com/bridgee-ai/bridgee-ios-sdk.git`
-3. Selecione uma tag já publicada. Atualmente a última tag verificada é `1.1.1`; `2.0.0` é candidata e ainda não deve ser selecionada antes da publicação.
+3. Selecione uma tag disponível nas [Releases do repositório](https://github.com/bridgee-ai/bridgee-ios-sdk/releases). O estado e as notas da release são a referência para disponibilidade SPM; não deduza publicação somente da versão desta fonte.
 
-Após a publicação e verificação da tag `2.0.0`, adicione ao seu `Package.swift` para fazer a migração explícita. O exemplo abaixo é para a futura release, não uma instrução de instalação disponível agora:
+Para migrar explicitamente para esta linha, use `2.0.0` no seu `Package.swift` somente se a tag correspondente estiver disponível nas Releases:
 
 ```swift
 dependencies: [
@@ -42,13 +42,13 @@ dependencies: [
 
 ### CocoaPods
 
-O nome correto do pod é `BridgeeAiSDK`. A versão publicada verificada é `1.1.1`:
+O nome correto do pod é `BridgeeAiSDK`. Na consulta de preparação de 11/11/2026, a versão disponível no CocoaPods era `1.1.1`:
 
 ```ruby
 pod 'BridgeeAiSDK', '1.1.1'
 ```
 
-`2.0.0` ainda não está publicada no CocoaPods. Somente depois da publicação e validação, quem migrar deve trocar a versão por `'2.0.0'` e revisar o guia de migração. Publicar a tag SPM não publica o pod automaticamente. O nome do produto/module SwiftPM continua `BridgeeSDK`.
+Essa consulta não encontrou `2.0.0` no CocoaPods. Verifique o registry antes de migrar; somente depois da publicação e validação, troque a versão por `'2.0.0'` e revisar o guia de migração. Publicar a tag SPM não publica o pod automaticamente. O nome do produto/module SwiftPM continua `BridgeeSDK`.
 
 Em seguida, execute:
 

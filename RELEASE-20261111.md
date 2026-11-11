@@ -1,6 +1,6 @@
 # iOS 2.0.0 release candidate
 
-Prepared 11 November 2026. Registry publication and release tags have NOT occurred.
+Source-preparation snapshot recorded on 11 November 2026 before publication: registry publication and release tags had not occurred. Consult the repository Releases for the subsequent authoritative SPM release status; CocoaPods publication is independent.
 
 Existing configuration, firstOpen, MatchBundle and provider API signatures remain available, but analytics delivery is deliberately incompatible: Bridgee no longer emits first_open or the configured tenant_first_open. Firebase owns first_open; campaign_details and install_* remain. See [the migration guide](docs/FIRST_OPEN_MIGRATION.md). Preserved signatures do not mean identical analytics behavior.
 
